@@ -82,6 +82,9 @@ required:
   city_for_disputes:
     default: ""
     area: "about"
+  external_id_length:
+    client: true
+    default: 16
 
 branding:
   logo:

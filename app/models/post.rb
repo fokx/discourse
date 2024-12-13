@@ -10,6 +10,8 @@ class Post < ActiveRecord::Base
   include HasCustomFields
   include LimitedEdit
 
+  EXTERNAL_ID_MAX_LENGTH = 64
+
   self.ignored_columns = [
     "avg_time", # TODO: Remove when 20240212034010_drop_deprecated_columns has been promoted to pre-deploy
     "image_url", # TODO: Remove when 20240212034010_drop_deprecated_columns has been promoted to pre-deploy

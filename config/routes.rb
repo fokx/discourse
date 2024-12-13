@@ -8,16 +8,17 @@ USERNAME_ROUTE_FORMAT = /[%\w.\-]+?/ unless defined?(USERNAME_ROUTE_FORMAT)
 BACKUP_ROUTE_FORMAT = /.+\.(sql\.gz|tar\.gz|tgz)/i unless defined?(BACKUP_ROUTE_FORMAT)
 
 Discourse::Application.routes.draw do
-  def patch(*)
-  end # Disable PATCH requests
+  def patch(*) end
+
+  # Disable PATCH requests
 
   scope path: nil, constraints: { format: %r{(json|html|\*/\*)} } do
     relative_url_root =
       (
         if (
-             defined?(Rails.configuration.relative_url_root) &&
-               Rails.configuration.relative_url_root
-           )
+          defined?(Rails.configuration.relative_url_root) &&
+            Rails.configuration.relative_url_root
+        )
           Rails.configuration.relative_url_root + "/"
         else
           "/"
@@ -1056,6 +1057,7 @@ Discourse::Application.routes.draw do
         :constraints => {
           format: /(json|rss)/,
         }
+    get "posts/by_external_id/:external_id" => "posts#by_external_id", format: :json, constrains: { external_id: /\A[\w-]+\z/ }
     get "posts/by_number/:topic_id/:post_number" => "posts#by_number"
     get "posts/by-date/:topic_id/:date" => "posts#by_date"
     get "posts/:id/reply-history" => "posts#reply_history"
@@ -1470,7 +1472,6 @@ Discourse::Application.routes.draw do
          :constraints => {
            topic_id: /\d+/,
          }
-
     get "p/:post_id(/:user_id)" => "posts#short_link"
     get "/posts/:id/cooked" => "posts#cooked"
     get "/posts/:id/expand-embed" => "posts#expand_embed"

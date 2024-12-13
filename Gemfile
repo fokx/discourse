@@ -55,6 +55,7 @@ gem "discourse-fonts", require: "discourse_fonts"
 
 gem "message_bus"
 
+gem "rails"
 gem "rails_multisite"
 
 gem "fastimage"

@@ -552,6 +552,7 @@ class PostCreator
       via_email
       raw_email
       action_code
+      external_id
     ].each { |a| post.public_send("#{a}=", @opts[a]) if @opts[a].present? }
 
     post.extract_quoted_post_numbers
@@ -571,6 +572,12 @@ class PostCreator
       post.hidden = true
       post.hidden_at = Time.zone.now
       post.hidden_reason_id = @opts[:hidden_reason_id]
+    end
+
+    if @opts[:hidden_reason_id].present?
+      post.external_id = @opts[:external_id]
+    else
+      post.external_id = SecureRandom.alphanumeric(SiteSetting.external_id_length)
     end
 
     @post = post

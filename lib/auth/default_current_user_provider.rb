@@ -78,14 +78,14 @@ class Auth::DefaultCurrentUserProvider
     return env[DECRYPTED_AUTH_COOKIE] if env.key?(DECRYPTED_AUTH_COOKIE)
 
     env[DECRYPTED_AUTH_COOKIE] = begin
-      request = ActionDispatch::Request.new(env)
-      cookie = request.cookies[TOKEN_COOKIE]
+                                   request = ActionDispatch::Request.new(env)
+                                   cookie = request.cookies[TOKEN_COOKIE]
 
-      # don't even initialize a cookie jar if we don't have a cookie at all
-      if cookie&.valid_encoding? && cookie.present?
-        request.cookie_jar.encrypted[TOKEN_COOKIE]&.with_indifferent_access
-      end
-    end
+                                   # don't even initialize a cookie jar if we don't have a cookie at all
+                                   if cookie&.valid_encoding? && cookie.present?
+                                     request.cookie_jar.encrypted[TOKEN_COOKIE]&.with_indifferent_access
+                                   end
+                                 end
   end
 
   # do all current user initialization here
@@ -160,10 +160,10 @@ class Auth::DefaultCurrentUserProvider
       current_user = lookup_api_user(api_key, request)
       if !current_user
         raise Discourse::InvalidAccess.new(
-                I18n.t("invalid_api_credentials"),
-                nil,
-                custom_message: "invalid_api_credentials",
-              )
+          I18n.t("invalid_api_credentials"),
+          nil,
+          custom_message: "invalid_api_credentials",
+        )
       end
       raise Discourse::InvalidAccess if current_user.suspended? || !current_user.active
 
@@ -246,10 +246,10 @@ class Auth::DefaultCurrentUserProvider
 
       if needs_rotation
         if @user_token.rotate!(
-             user_agent: @env["HTTP_USER_AGENT"],
-             client_ip: @request.ip,
-             path: @env["REQUEST_PATH"],
-           )
+          user_agent: @env["HTTP_USER_AGENT"],
+          client_ip: @request.ip,
+          path: @env["REQUEST_PATH"],
+        )
           set_auth_cookie!(@user_token.unhashed_auth_token, user, cookie_jar)
           DiscourseEvent.trigger(:user_session_refreshed, user)
         end
@@ -309,7 +309,7 @@ class Auth::DefaultCurrentUserProvider
   # DISCOURSE_DEVELOPER_EMAILS for self-hosters.
   def make_developer_admin(user)
     if user.active? && !user.admin && Rails.configuration.respond_to?(:developer_emails) &&
-         Rails.configuration.developer_emails.include?(user.email)
+      Rails.configuration.developer_emails.include?(user.email)
       user.admin = true
       user.save
       Group.refresh_automatic_groups!(:staff, :admins)
@@ -382,13 +382,13 @@ class Auth::DefaultCurrentUserProvider
 
       user =
         if api_key.user
-          api_key.user if !api_username || (api_key.user.username_lower == api_username.downcase)
+          api_key.user if !api_username || (api_key.user.usetrname_lower == api_username.downcase) || (URI.encode_uri_component(api_key.user.username_lower) == api_username)
         elsif api_username
           User.find_by(username_lower: api_username.downcase)
         elsif user_id = header_api_key? ? @env[HEADER_API_USER_ID] : request["api_user_id"]
           User.find_by(id: user_id.to_i)
         elsif external_id =
-              header_api_key? ? @env[HEADER_API_USER_EXTERNAL_ID] : request["api_user_external_id"]
+          header_api_key? ? @env[HEADER_API_USER_EXTERNAL_ID] : request["api_user_external_id"]
           SingleSignOnRecord.find_by(external_id: external_id.to_s).try(:user)
         end
 
