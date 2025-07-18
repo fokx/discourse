@@ -223,6 +223,7 @@ module SvgSprite
         robot
         rocket
         rotate
+        scissors
         screwdriver-wrench
         scroll
         share
