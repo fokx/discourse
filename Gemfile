@@ -5,9 +5,10 @@ ruby "~> 3.3"
 source "https://rubygems.org"
 # if there is a super emergency and rubygems is playing up, try
 #source 'http://production.cf.rubygems.org'
-
 gem "bootsnap", require: false, platform: :mri
-
+gem "rspec"
+gem "listen"
+gem "puma-acme"
 gem "actionmailer", "~> 7.2.0"
 gem "actionpack", "~> 7.2.0"
 gem "actionview", "~> 7.2.0"
@@ -53,6 +54,7 @@ gem "discourse-emojis", require: "discourse_emojis"
 
 gem "message_bus"
 
+gem "rails"
 gem "rails_multisite"
 
 gem "fastimage"
@@ -125,8 +127,6 @@ group :test do
 end
 
 group :test, :development do
-  gem "rspec"
-  gem "listen", require: false
   gem "certified", require: false
   gem "fabrication", require: false
   gem "mocha", require: false
