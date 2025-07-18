@@ -40,6 +40,7 @@ class DiscourseConnectBase
     title
     username
     website
+    user_global_api_key
   ]
 
   FIXNUMS = []
@@ -89,9 +90,9 @@ class DiscourseConnectBase
 
     raise PayloadParseError.new(<<~MSG) if parsed["sso"] =~ %r{[^a-zA-Z0-9=\r\n/+]}m
         The SSO field should be Base64 encoded, using only A-Z, a-z, 0-9, +, /, and = characters.
-        
+
         Your input contains characters we don't understand as Base64, see http://en.wikipedia.org/wiki/Base64.
-        
+
         sso: #{parsed["sso"]}
       MSG
 
@@ -102,9 +103,9 @@ class DiscourseConnectBase
         Bad signature for payload
 
         sso: #{parsed["sso"]}
-        
+
         sig: #{parsed["sig"]}
-        
+
         expected sig: #{sso.sign(parsed["sso"])}
         MSG
 
