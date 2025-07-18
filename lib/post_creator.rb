@@ -489,6 +489,13 @@ class PostCreator
     return if @topic
     begin
       opts = @opts[:topic_opts] ? @opts.merge(@opts[:topic_opts]) : @opts
+      if @opts[:external_id].present?
+        opts[:external_id] = @opts[:external_id]
+      else
+        external_id = SecureRandom.alphanumeric(SiteSetting.external_id_length)
+        @opts[:external_id] = external_id
+        opts[:external_id] = external_id
+      end
       topic_creator = TopicCreator.new(@user, guardian, opts)
       @topic = topic_creator.create
     rescue ActiveRecord::Rollback
@@ -556,6 +563,7 @@ class PostCreator
       raw_email
       action_code
       locale
+      external_id
     ].each { |a| post.public_send("#{a}=", @opts[a]) if @opts[a].present? }
 
     post.extract_quoted_post_numbers
@@ -575,6 +583,14 @@ class PostCreator
       post.hidden = true
       post.hidden_at = Time.zone.now
       post.hidden_reason_id = @opts[:hidden_reason_id]
+    end
+
+    if @opts[:external_id].present?
+      post.external_id = @opts[:external_id]
+    else
+      external_id = SecureRandom.alphanumeric(SiteSetting.external_id_length)
+      @opts[:external_id] = external_id
+      post.external_id = external_id
     end
 
     @post = post
