@@ -2,7 +2,14 @@
 
 # The most basic attributes of a topic that we need to create a link for it.
 class BasicPostSerializer < ApplicationSerializer
-  attributes :id, :name, :username, :avatar_template, :created_at, :cooked, :cooked_hidden
+  attributes :id,
+             :name,
+             :username,
+             :avatar_template,
+             :created_at,
+             :cooked,
+             :cooked_hidden,
+             :external_id
 
   attr_accessor :topic_view
 
@@ -24,6 +31,10 @@ class BasicPostSerializer < ApplicationSerializer
 
   def include_cooked_hidden?
     cooked_hidden
+  end
+
+  def include_external_id?
+    external_id
   end
 
   def cooked

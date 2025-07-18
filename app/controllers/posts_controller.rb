@@ -305,6 +305,11 @@ class PostsController < ApplicationController
     render_json_dump(result)
   end
 
+  def by_external_id
+    post = Post.find_by(external_id: params[:external_id])
+    display_post(post)
+  end
+
   def show
     post = find_post_from_params
     display_post(post)
