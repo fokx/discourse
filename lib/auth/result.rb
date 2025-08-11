@@ -25,6 +25,7 @@ class Auth::Result
     overrides_email
     overrides_username
     overrides_name
+    user_global_api_key
   ]
 
   attr_accessor *ATTRIBUTES
