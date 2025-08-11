@@ -43,11 +43,17 @@ class TopicsController < ApplicationController
     render json: { slug: topic.slug, topic_id: topic.id, url: topic.url }
   end
 
-  def show_by_external_id
+  def external_id_json
     topic = Topic.find_by(external_id: params[:external_id])
     raise Discourse::NotFound unless topic
     guardian.ensure_can_see!(topic)
     redirect_to_correct_topic(topic, params[:post_number])
+  end
+
+  def external_id_redir
+    topic = Topic.find_by(external_id: params[:external_id])
+    raise Discourse::NotFound unless topic
+    redirect_to_correct_topic(topic, params[:post_number], true)
   end
 
   def show
@@ -1270,7 +1276,7 @@ class TopicsController < ApplicationController
     end
   end
 
-  def redirect_to_correct_topic(topic, post_number = nil)
+  def redirect_to_correct_topic(topic, post_number = nil, nojson = false)
     begin
       guardian.ensure_can_see!(topic)
     rescue Discourse::InvalidAccess => ex
@@ -1294,7 +1300,9 @@ class TopicsController < ApplicationController
 
     url = topic.relative_url
     url << "/#{post_number}" if post_number.to_i > 0
-    url << ".json" if request.format.json?
+    unless nojson
+      url << ".json" if request.format.json?
+    end
 
     opts.each do |k, v|
       s = url.include?("?") ? "&" : "?"

@@ -53,6 +53,9 @@
 # type: file_size_restriction - A file size restriction in bytes.
 #
 required:
+  external_id_length:
+    client: true
+    default: 16
   title:
     client: true
     default: "Discourse"

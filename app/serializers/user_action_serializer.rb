@@ -33,7 +33,9 @@ class UserActionSerializer < ApplicationSerializer
              :edit_reason,
              :category_id,
              :closed,
-             :archived
+             :archived,
+             :external_id,
+             :reply_to_post_external_id
 
   def avatar_template
     User.avatar_template(object.username, object.uploaded_avatar_id)
@@ -71,6 +73,10 @@ class UserActionSerializer < ApplicationSerializer
     object.action_type == UserAction::REPLY
   end
 
+  def include_reply_to_post_external_id?
+    object.action_type == UserAction::REPLY
+  end
+
   def include_edit_reason?
     object.action_type == UserAction::EDIT
   end
@@ -81,6 +87,14 @@ class UserActionSerializer < ApplicationSerializer
 
   def archived
     object.topic_archived
+  end
+
+  def external_id
+    object&.external_id
+  end
+
+  def reply_to_post_external_id
+    object&.reply_to_post_external_id
   end
 
   def include_action_code_who?

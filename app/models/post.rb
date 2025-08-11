@@ -11,6 +11,8 @@ class Post < ActiveRecord::Base
   include LimitedEdit
   include Localizable
 
+  EXTERNAL_ID_MAX_LENGTH = 64
+
   self.ignored_columns = [
     "avg_time", # TODO: Remove when 20240212034010_drop_deprecated_columns has been promoted to pre-deploy
     "image_url", # TODO: Remove when 20240212034010_drop_deprecated_columns has been promoted to pre-deploy
@@ -506,7 +508,8 @@ class Post < ActiveRecord::Base
   end
 
   def external_id
-    "#{topic_id}/#{post_number}"
+    self[:external_id]
+    # "#{topic_id}/#{post_number}"
   end
 
   def reply_to_post

@@ -5,4 +5,5 @@ class BasicTopicSerializer < ApplicationSerializer
   include LocalizedFancyTopicTitleMixin
 
   attributes :id, :title, :fancy_title, :slug, :posts_count
+  attributes :id, :title, :fancy_title, :slug, :posts_count, :external_id
 end
