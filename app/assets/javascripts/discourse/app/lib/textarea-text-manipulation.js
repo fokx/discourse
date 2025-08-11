@@ -13,6 +13,7 @@ import { siteDir } from "discourse/lib/text-direction";
 import toMarkdown from "discourse/lib/to-markdown";
 import {
   caretPosition,
+  clipboardCopy,
   clipboardHelpers,
   determinePostReplaceSelection,
   inCodeBlock,
@@ -53,6 +54,16 @@ function getHead(head, prev) {
   } else {
     return getHead(head(prev));
   }
+}
+
+function lengthAfterLastLF(str) {
+  const L = str.length;
+  for (let i = 0; i < L; i++) {
+    if (str[L - 1 - i] === "\n") {
+      return i;
+    }
+  }
+  return L;
 }
 
 /** @implements {TextManipulation} */
@@ -765,6 +776,35 @@ export default class TextareaTextManipulation {
       newDir = currentDir === "ltr" ? "rtl" : "ltr";
 
     this.$textarea.attr("dir", newDir).focus();
+  }
+
+  @bind
+  copyLine() {
+    const sel = this.getSelected("", { lineVal: true });
+    if (sel.start === sel.end) {
+      clipboardCopy(sel.lineVal);
+      setCaretPosition(this.textarea, sel.start - lengthAfterLastLF(sel.pre));
+    } else {
+      clipboardCopy(sel.value);
+    }
+  }
+
+  @bind
+  cutLine() {
+    const sel = this.getSelected("", { lineVal: true });
+    if (sel.start === sel.end) {
+      clipboardCopy(sel.lineVal);
+      let beforeChars = lengthAfterLastLF(sel.pre);
+      insertAtTextarea(
+        this.textarea,
+        sel.start - beforeChars,
+        sel.end + sel.lineVal.length - beforeChars,
+        ""
+      );
+    } else {
+      clipboardCopy(sel.value);
+      insertAtTextarea(this.textarea, sel.start, sel.end, "");
+    }
   }
 
   @bind

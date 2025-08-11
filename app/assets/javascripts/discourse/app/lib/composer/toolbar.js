@@ -356,6 +356,28 @@ export default class Toolbar extends ToolbarBase {
         perform: (e) => e.toggleDirection(),
       });
     }
+
+    this.addButton({
+      id: "copyline",
+      group: "fontStyles",
+      icon: "copy",
+      rawlabel: "Copy",
+      shortcut: "C",
+      preventFocus: true,
+      trimLeading: true,
+      perform: (e) => e.copyLine(),
+    });
+
+    this.addButton({
+      id: "cutline",
+      group: "fontStyles",
+      icon: "scissors",
+      rawlabel: "Cut",
+      shortcut: "X",
+      preventFocus: true,
+      trimLeading: true,
+      perform: (e) => e.cutLine(),
+    });
   }
 
   @action
