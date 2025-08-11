@@ -397,7 +397,10 @@ class Auth::DefaultCurrentUserProvider
 
       user =
         if api_key.user
-          api_key.user if !api_username || (api_key.user.username_lower == api_username.downcase)
+          if !api_username || (api_key.user.username_lower == api_username.downcase) ||
+               (URI.encode_uri_component(api_key.user.username_lower) == api_username)
+            api_key.user
+          end
         elsif api_username
           User.find_by(username_lower: api_username.downcase)
         elsif user_id = header_api_key? ? @env[HEADER_API_USER_ID] : request["api_user_id"]
