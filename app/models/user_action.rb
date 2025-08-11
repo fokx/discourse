@@ -208,7 +208,7 @@ class UserAction < ActiveRecord::Base
         t.title, a.action_type, a.created_at, t.id topic_id,
         t.closed AS topic_closed, t.archived AS topic_archived,
         a.user_id AS target_user_id, au.name AS target_name, au.username AS target_username,
-        coalesce(p.post_number, 1) post_number, p.id as post_id,
+        coalesce(p.post_number, 1) post_number, p.id as post_id, p.external_id,
         p.reply_to_post_number,
         pu.username, pu.name, pu.id user_id,
         pu.uploaded_avatar_id,
@@ -221,11 +221,13 @@ class UserAction < ActiveRecord::Base
         pc.value AS action_code_who,
         pc2.value AS action_code_path,
         p.edit_reason,
-        t.category_id
+        t.category_id,
+        p3.external_id as reply_to_post_external_id
       FROM user_actions as a
       JOIN topics t on t.id = a.target_topic_id
       LEFT JOIN posts p on p.id = a.target_post_id
       JOIN posts p2 on p2.topic_id = a.target_topic_id and p2.post_number = 1
+      JOIN posts p3 on p3.topic_id = a.target_topic_id and p3.post_number = p.reply_to_post_number
       JOIN users u on u.id = a.acting_user_id
       JOIN users pu on pu.id = COALESCE(p.user_id, t.user_id)
       JOIN users au on au.id = a.user_id

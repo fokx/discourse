@@ -79,6 +79,7 @@ class TopicViewSerializer < ApplicationSerializer
     :is_shared_draft,
     :slow_mode_enabled_until,
     :has_localized_content,
+    :external_id,
   )
 
   has_one :details, serializer: TopicViewDetailsSerializer, root: false, embed: :objects
@@ -328,5 +329,9 @@ class TopicViewSerializer < ApplicationSerializer
 
   def include_has_localized_content?
     SiteSetting.content_localization_enabled
+  end
+
+  def external_id
+    object.topic.external_id
   end
 end

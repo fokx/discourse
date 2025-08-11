@@ -32,6 +32,20 @@ DiscourseEvent.on(:post_edited) do |post, topic_changed|
   end
 end
 
+# after_initialize do
+#   DiscourseEvent.on(:post_created) do |post, opts, user|
+#     external_id = opts[:external_id].presence || SecureRandom.alphanumeric(SiteSetting.external_id_length)
+#     post.update_column(:external_id, external_id)
+#   end
+# end
+#
+# after_initialize do
+#   DiscourseEvent.on(:topic_created) do |topic, opts, user|
+#     external_id = opts[:external_id].presence || SecureRandom.alphanumeric(SiteSetting.external_id_length)
+#     topic.update_column(:external_id, external_id)
+#   end
+# end
+
 %i[
   user_logged_out
   user_created

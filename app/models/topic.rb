@@ -14,7 +14,7 @@ class Topic < ActiveRecord::Base
   include Localizable
   extend Forwardable
 
-  EXTERNAL_ID_MAX_LENGTH = 50
+  EXTERNAL_ID_MAX_LENGTH = 64
 
   self.ignored_columns = [
     "avg_time", # TODO: Remove when 20240212034010_drop_deprecated_columns has been promoted to pre-deploy
