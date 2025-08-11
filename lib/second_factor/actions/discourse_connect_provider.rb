@@ -72,6 +72,31 @@ module SecondFactor::Actions
     end
 
     def populate_user_data(sso)
+      current_user_global_api_keys =
+        ApiKey
+          .where(hidden: false)
+          .where(description: "user-global-api-key")
+          .where(user_id: current_user.id)
+          .includes(:user)
+          .includes(:created_by)
+          .order("revoked_at DESC NULLS FIRST, created_at DESC")
+      current_user_global_api_keys.destroy_all if current_user_global_api_keys.length > 0
+      api_key = ApiKey.new({ "description" => "user-global-api-key" })
+      api_key_str = ""
+      ApiKey.transaction do
+        api_key.created_by = current_user
+        api_key.api_key_scopes = []
+        api_key.scope_mode = "global"
+        api_key.user = current_user
+        api_key.save!
+        api_key_str = api_key.key
+        StaffActionLogger.new(current_user).log_api_key(
+          api_key,
+          UserHistory.actions[:api_key_create],
+          changes: api_key.saved_changes,
+        )
+      end
+      sso.user_global_api_key = api_key_str
       sso.name = current_user.name
       sso.username = current_user.username
       sso.email = current_user.email
