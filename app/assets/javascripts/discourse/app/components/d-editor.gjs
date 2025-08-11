@@ -529,6 +529,8 @@ export default class DEditor extends Component {
       addText: (text) => this.textManipulation.addText(selected, text),
       getText: () => this.value,
       toggleDirection: () => this.textManipulation.toggleDirection(),
+      copyLine: () => this.textManipulation.copyLine(),
+      cutLine: () => this.textManipulation.cutLine(),
       replaceText: (oldVal, newVal, opts) =>
         this.textManipulation.replaceText(oldVal, newVal, opts),
     };
