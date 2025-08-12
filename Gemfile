@@ -56,6 +56,7 @@ gem "discourse-emojis", require: "discourse_emojis"
 
 gem "message_bus"
 
+gem "rails"
 gem "rails_multisite"
 
 gem "fastimage"
