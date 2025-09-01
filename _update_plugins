@@ -1,0 +1,35 @@
+cd plugins
+for plugin in *
+do
+    echo "Processing: $plugin"
+    
+    # Only process directories
+    if [[ -d "$plugin" ]]; then
+        cd "$plugin"
+        
+        # Check if it's a git repository
+        if [[ -d ".git" ]]; then
+            # Get the remote origin URL
+            remote_url=$(git remote get-url origin 2>/dev/null)
+            
+            if [[ $? -eq 0 ]]; then
+                # Check if the remote URL matches the one to skip
+                if [[ "$remote_url" == "git@github.com:fokx/discourse" || "$remote_url" == "git@github.com:fokx/discourse.git" ]]; then
+                    echo "  → Skipping git pull (fokx/discourse repository)"
+                else
+                    echo "  → Pulling from: $remote_url"
+                    git pull
+                fi
+            else
+                echo "  → No remote origin found"
+            fi
+        else
+            echo "  → Not a git repository"
+        fi
+        
+        cd ..
+    else
+        echo "  → Skipping (not a directory)"
+    fi
+done
+cd ../

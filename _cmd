@@ -1,0 +1,30 @@
+local -> HK:
+rsync /f/discourse/ hk:/var/www/discourse/  -avP --exclude={"node_modules/*","mmdb/*","public/assets/*","log/production.log","vendor/data/*","plugins/*/gems/*",".idea/*","public/*","tmp/*","app/assets/javascripts/discourse/dist/assets/*","/log/*"} --delete
+
+HK -> local:
+rsync-dis
+
+dev:
+bundle && pnpm i&& rake db:migrate
+then click dev in package.json
+
+to sync upstream:
+sync in GitHub to discourse/discourse
+git fetch origin
+git checkout main
+git pull origin main
+git checkout fokx
+git rebase main
+
+RAILS_ENV=test bin/rails db:create
+RAILS_ENV=test bin/rails db:migrate
+RAILS_ENV=test bin/rails dbconsole
+ALTER DATABASE discourse_development REFRESH COLLATION VERSION;
+ALTER DATABASE discourse_test REFRESH COLLATION VERSION;
+ALTER DATABASE discourse_test_multisite REFRESH COLLATION VERSION;
+ALTER DATABASE postgres REFRESH COLLATION VERSION;
+ALTER DATABASE template1 REFRESH COLLATION VERSION;
+
+rake 'plugin:qunit[discourse-reactions]'
+or:
+http://localhost:4200/tests?target=discourse-reactions
