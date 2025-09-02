@@ -363,12 +363,7 @@ class TopicQuery
   end
 
   def list_hot
-    create_list(:hot, unordered: true, prioritize_pinned: true) do |topics|
-      topics = remove_muted(topics, user, options)
-      topics.joins("JOIN topic_hot_scores on topics.id = topic_hot_scores.topic_id").order(
-        "topic_hot_scores.score DESC",
-      )
-    end
+    create_list(:latest, {}, recom_results)
   end
 
   def list_top_for(period)
@@ -482,14 +477,14 @@ class TopicQuery
     SQL
 
     sql << <<~SQL if SiteSetting.tagging_enabled
-        OR topics.id IN (
-          SELECT tt.topic_id FROM topic_tags tt WHERE tt.tag_id IN (
-            SELECT tu.tag_id
-            FROM tag_users tu
-            WHERE tu.user_id = :user_id AND tu.notification_level >= :tracking
-          )
+      OR topics.id IN (
+        SELECT tt.topic_id FROM topic_tags tt WHERE tt.tag_id IN (
+          SELECT tu.tag_id
+          FROM tag_users tu
+          WHERE tu.user_id = :user_id AND tu.notification_level >= :tracking
         )
-      SQL
+      )
+    SQL
 
     list.where(sql, user_id: user_id, tracking: NotificationLevels.all[:tracking])
   end
@@ -586,6 +581,30 @@ class TopicQuery
     self.class.results_filter_callbacks.each do |filter_callback|
       result = filter_callback.call(:latest, result, @user, options)
     end
+
+    result
+  end
+
+  def recom_results(options = {})
+    total_recom_list = Discourse.cache.fetch("recom_topic_ids_#{user.id}")
+
+    return latest_results(options) if total_recom_list.blank?
+
+    # Convert cached set to ordered array of topic IDs
+    recom_topic_ids = total_recom_list.to_a
+
+    result = default_results(options)
+    result = result.where(id: recom_topic_ids)
+    result = remove_muted(result, @user, options)
+    result = apply_shared_drafts(result, get_category_id(options[:category]), options)
+
+    # plugins can remove topics here:
+    self.class.results_filter_callbacks.each do |filter_callback|
+      result = filter_callback.call(:latest, result, @user, options)
+    end
+
+    # Order by position in recommendations array
+    # result = result.order(Arel.sql("position(topics.id::text in '#{recom_topic_ids.join(",")}')"))
 
     result
   end
